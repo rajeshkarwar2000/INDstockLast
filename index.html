@@ -28,8 +28,8 @@ h1{font-size:28px;margin:6px 4px 14px;letter-spacing:-.5px}h2{font-size:13px;tex
 input[type=text],select,textarea{width:100%;border-radius:14px;border:1px solid rgba(128,128,128,.25);background:rgba(var(--tint),.4);color:var(--fg);padding:11px 12px;font:inherit;outline:none}
 textarea{min-height:120px;font-size:12px}::placeholder{color:var(--mut)}select option{color:#111}
 input[type=range]{width:100%;accent-color:#0a84ff;margin:4px 0}
-.seg{display:flex;padding:3px;border-radius:14px;background:rgba(128,128,128,.25);margin-bottom:10px}
-.seg button{flex:1;border:0;background:none;color:var(--fg);padding:8px;border-radius:11px;font:600 14px inherit;font-family:inherit}.seg button.on{background:rgba(255,255,255,.85);color:#111}
+.seg{display:flex;flex-wrap:wrap;gap:2px;padding:3px;border-radius:14px;background:rgba(128,128,128,.25);margin-bottom:10px}
+.seg button{flex:1 1 30%;border:0;background:none;color:var(--fg);padding:8px;border-radius:11px;font:600 14px inherit;font-family:inherit}.seg button.on{background:rgba(255,255,255,.85);color:#111}
 .f{margin-bottom:12px}.f label,label.s{display:flex;justify-content:space-between;font-weight:600;font-size:14px;gap:8px}label.s{font-size:12px;color:var(--mut);font-weight:500;margin-bottom:3px}.f small{color:var(--mut);display:block;font-size:12px}
 .m-stock,.m-fno{display:none}.show{display:block!important}
 nav{position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));max-width:500px;margin:0 auto;display:flex;padding:6px;border-radius:26px;z-index:5}
@@ -50,7 +50,7 @@ a.lk{color:#0a84ff;text-decoration:none;font-weight:600}
  <h1>Analyze</h1>
  <div class="glass card">
   <div class="seg" id="mode"><button data-m="stock">Stock</button><button data-m="fno">F&amp;O</button></div>
-  <label class="s">Time horizon</label><div class="seg" id="hz"></div>
+  <label class="s">Trade type / time horizon</label><div class="seg" id="hz"></div>
   <div class="f"><label class="s">Position I’m planning</label><select id="side"><option value="auto">Auto (follow AI decision)</option><option value="long">Buy / Long</option><option value="short">Sell / Short</option></select></div>
   <label class="s">Symbol</label><input type="text" id="sym" placeholder="e.g. RELIANCE, NIFTY, BANKNIFTY" autocapitalize="characters">
  </div>
@@ -94,15 +94,15 @@ a.lk{color:#0a84ff;text-decoration:none;font-weight:600}
  <div class="sub" style="margin:0 6px">Passwords are never typed into or stored by this page.</div>
  <div class="btns"><button class="btn" id="reset">Reset all</button></div>
 </section>
-<div class="foot">Version 4 (Gemini reply screen) · Decision-support tool for personal use. Not financial advice; markets are risky.</div>
+<div class="foot">Version 5 (F&amp;O strategies) · Decision-support tool for personal use. Not financial advice; markets are risky.</div>
 </main>
 <nav class="glass" id="nav"><button data-p="home" class="on"><b>◉</b>Home</button><button data-p="analyze"><b>✦</b>Analyze</button><button data-p="sources"><b>☰</b>Sources</button><button data-p="suggest"><b>★</b>Suggestion</button><button data-p="settings"><b>⚙</b>Settings</button></nav>
 
 <script>
 const F=[['global','Global events & war'],['mkts','Global markets (US, China, Europe, others)'],['news','Indian & intl. news'],['flow','FII / FPI / DII flows'],['company','Company news & reports'],['broker','Broker recommendations (6+)'],['tech','Technical trend'],['fund','Fundamentals & valuation','stock'],['deriv','Derivatives: OI, PCR, IV','fno']];
 const M=[['usa','USA (stocks & F&O)'],['china','China'],['europe','Europe'],['other','Other']];
-const HZ={stock:[['st','Short term'],['lt','Long term']],fno:[['intra','Intraday'],['weekly','Weekly expiry'],['monthly','Monthly expiry']]};
-const HW={st:{tech:1.2,news:1.1},lt:{company:1.8,broker:1.4,fund:2,news:.6,global:.7,tech:.6},intra:{global:1.2,news:1.3,flow:1.3,tech:1.5,deriv:1.4,company:.4,broker:.5},weekly:{tech:1.2,deriv:1.4,company:.6,broker:.7},monthly:{flow:1.1,deriv:1.1,company:.8}};
+const HZ={stock:[['st','Short term'],['lt','Long term']],fno:[['intra','Intraday (MIS)'],['btst','Overnight BTST/STBT'],['swing','Swing (2–5 days)'],['weekly','Weekly expiry'],['monthly','Monthly expiry'],['pos','Positional / delivery (NRML)']]};
+const HW={st:{tech:1.2,news:1.1},lt:{company:1.8,broker:1.4,fund:2,news:.6,global:.7,tech:.6},intra:{global:1.2,news:1.3,flow:1.3,tech:1.5,deriv:1.4,company:.4,broker:.5},weekly:{tech:1.2,deriv:1.4,company:.6,broker:.7},monthly:{flow:1.1,deriv:1.1,company:.8},btst:{global:1.2,news:1.2,flow:1.2,tech:1.3,deriv:1.3,company:.5,broker:.5},swing:{tech:1.3,deriv:1.2,news:1.1,company:.7,broker:.8},pos:{flow:1.2,company:.9,broker:.9}};
 const GP={white:{n:'White glass',blur:26,gop:.5,sat:1.6,tint:'255,255,255',theme:''},frost:{n:'Frosted',blur:42,gop:.68,sat:1.2,tint:'255,255,255',theme:''},clear:{n:'Crystal clear',blur:12,gop:.22,sat:1.5,tint:'255,255,255',theme:''},blue:{n:'Ice blue',blur:30,gop:.4,sat:1.8,tint:'205,226,255',theme:''},dark:{n:'Dark glass',blur:28,gop:.14,sat:1.5,tint:'255,255,255',theme:'dark'}};
 const SRC={'Brokers':[['Motilal Oswal','https://www.motilaloswal.com'],['Groww','https://groww.in'],['Angel One','https://www.angelone.in'],['Zerodha','https://zerodha.com'],['ICICI Direct','https://www.icicidirect.com'],['Kotak Securities','https://www.kotaksecurities.com'],['HDFC Securities','https://www.hdfcsec.com'],['Sharekhan','https://www.sharekhan.com']],
 'Newspapers':[['Indian Express','https://indianexpress.com/section/business'],['The Hindu','https://www.thehindu.com/business'],['Economic Times','https://economictimes.indiatimes.com'],['Mint','https://www.livemint.com'],['Business Standard','https://www.business-standard.com'],['Hindustan Times','https://www.hindustantimes.com/business'],['Financial Express','https://www.financialexpress.com']],
@@ -119,7 +119,7 @@ const save=()=>{try{localStorage.setItem('ind-ai-v3',JSON.stringify(S))}catch(e)
 const $=i=>document.getElementById(i),esc=s=>String(s==null?'':s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 const fm=v=>'₹'+(Math.round(v*100)/100).toLocaleString('en-IN'),N=v=>+v>0?+v:0,hasC=()=>typeof claude!=='undefined';
 const act=()=>F.filter(x=>!x[2]||x[2]==S.mode),hzn=()=>HZ[S.mode].find(x=>x[0]==S.hz[S.mode])[1];
-const lab=d=>S.mode=='stock'?(d=='BUY'||d=='SELL'?d:'HOLD'):d=='BUY'?'BUY / CALL':d=='SELL'?'SELL / PUT':d;
+const lab=d=>{if(S.mode=='stock')return d=='BUY'||d=='SELL'?d:'HOLD';const st=S.rec&&S.rec.mode=='fno'&&S.rec.trade&&S.rec.trade.strategy;if(st&&['BUY','SELL','SIDEWAYS'].includes(d)&&!/no trade/i.test(st))return String(st).toUpperCase();return d=='BUY'?'BUY CALL':d=='SELL'?'BUY PUT':d};
 const get=p=>p.split('.').reduce((o,k)=>o[k],S),setp=(p,v)=>{const a=p.split('.'),l=a.pop();a.reduce((o,k)=>o[k],S)[l]=v};
 const pct=v=>Math.round(v*100);
 function toast(t){const e=$('toast');e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display='none',3800)}
@@ -144,8 +144,8 @@ broker: popular recommendations from at least 6 brokers (${picks}).
 tech: trend, momentum, support and resistance.
 ${k=='deriv'?'deriv: open interest build-up, PCR, IV and IV percentile, max pain, expiry.':'fund: fundamentals, valuation, 52-week position.'}
 Also weigh IMF, World Bank, RBI and SEBI reports on India and the global market.
-Rules: prices in rupees; ${m=='fno'?'for options give the premium to pay (buy a call on a bullish view, a put on a bearish view) and the premium to exit at; for futures the futures price; also give lotSize; ':''}times within 09:15-15:30 IST; exit date a weekday${m=='fno'?' before expiry':''}; use "NO TRADE" with null prices if the signal is weak or sideways; gainers/losers are today's top 5 on NSE; experts: at least 3 named analysts or brokers.
-Reply ONLY with JSON, no markdown: {"global":n,"usa":n,"china":n,"europe":n,"other":n,"news":n,"flow":n,"company":n,"broker":n,"tech":n,"${k}":n,"confidence":0-100,"reasons":{"global":"","mkts":"","news":"","flow":"","company":"","broker":"","tech":"","${k}":""},"price":n,"trade":{"action":"BUY|SELL|BUY CALL|BUY PUT|WAIT|SIDEWAYS|NO TRADE","instrument":"","entry":n,"exit":n,"stop":n,"entryDate":"YYYY-MM-DD","entryTime":"HH:MM","exitDate":"YYYY-MM-DD","exitTime":"HH:MM","lotSize":n,"profitPerUnit":n,"lossPerUnit":n,"reason":""}${m=='fno'?',"outlook":[{"date":"YYYY-MM-DD","trend":"up|down|flat","changePct":n}] (next 4 NSE working days),"tomorrowOption":{"direction":"up|down|flat","changePct":n,"note":""}':''},"market":{"news":[{"t":"","impact":"positive|negative|neutral"}],"trends":[""],"gainers":[{"s":"","c":n}],"losers":[{"s":"","c":n}],"experts":[{"by":"","view":""}]}}`}
+Rules: prices in rupees; ${m=='fno'?'Trade types: Intraday (MIS) squares off the same day; BTST/STBT is held overnight for about 1 day; Swing 2-5 days; Weekly/Monthly expiry are held toward that expiry; Positional/delivery (NRML) is carried until target or expiry. Decide clearly whether to buy a call, buy a put or use another option strategy (bull call spread, bear put spread, iron condor, straddle/strangle, futures, or a defined-risk write) that best fits the view, horizon and IV, and say in "reason" why it beats the alternatives. Name the exact instrument: underlying, strike, CE/PE and a real, currently listed NSE expiry date (YYYY-MM-DD) that suits the trade type (intraday/BTST: nearest weekly expiry unless today is expiry day; swing/weekly: nearest weekly; monthly/positional: current or next monthly). Entry is the premium to pay (net debit) or receive (net credit) and exit is the premium to close at; for futures the futures price. Give lotSize and every leg. ':''}times within 09:15-15:30 IST; exit date a weekday${m=='fno'?' before expiry':''}; use "NO TRADE" with null prices if the signal is weak or sideways; gainers/losers are today's top 5 on NSE; experts: at least 3 named analysts or brokers.
+Reply ONLY with JSON, no markdown: {"global":n,"usa":n,"china":n,"europe":n,"other":n,"news":n,"flow":n,"company":n,"broker":n,"tech":n,"${k}":n,"confidence":0-100,"reasons":{"global":"","mkts":"","news":"","flow":"","company":"","broker":"","tech":"","${k}":""},"price":n,"trade":{"action":"BUY|SELL|BUY CALL|BUY PUT|WAIT|SIDEWAYS|NO TRADE","instrument":""${m=='fno'?',"strategy":"BUY CALL|BUY PUT|BULL CALL SPREAD|BEAR PUT SPREAD|IRON CONDOR|STRADDLE|STRANGLE|FUTURES LONG|FUTURES SHORT|NO TRADE","optionType":"CALL|PUT|MIXED|FUTURE","strike":"","expiry":"YYYY-MM-DD","legs":[{"action":"BUY|SELL","type":"CALL|PUT","strike":n,"expiry":"YYYY-MM-DD","premium":n}]':''},"entry":n,"exit":n,"stop":n,"entryDate":"YYYY-MM-DD","entryTime":"HH:MM","exitDate":"YYYY-MM-DD","exitTime":"HH:MM","lotSize":n,"profitPerUnit":n,"lossPerUnit":n,"reason":""}${m=='fno'?',"outlook":[{"date":"YYYY-MM-DD","trend":"up|down|flat","changePct":n}] (next 4 NSE working days),"tomorrowOption":{"direction":"up|down|flat","changePct":n,"note":""}':''},"market":{"news":[{"t":"","impact":"positive|negative|neutral"}],"trends":[""],"gainers":[{"s":"","c":n}],"losers":[{"s":"","c":n}],"experts":[{"by":"","view":""}]}}`}
 
 function apply(j){const c=v=>Math.max(-100,Math.min(100,Math.round(+v||0)));
  ['global','news','flow','company','broker','tech','fund','deriv'].forEach(k=>{if(k in j)S.f[k]=c(j[k])});['usa','china','europe','other'].forEach(k=>{if(k in j)S.m[k]=c(j[k])});
@@ -216,7 +216,7 @@ function renderHome(){const r=calc(),d=r.d,tr=S.rec&&S.rec.trade||{},mk=S.mk||{}
  `<h2>Expert suggestions</h2><div class="glass card">${L(mk.experts,x=>`<div class="hi"><span><b>${esc(x.by)}</b><br><span class="sub">${esc(x.view)}</span></span></div>`,'Run analysis to load expert views.','analyst recommendations Nifty today')}</div>`+
  `<div class="sub" style="text-align:center">${S.last?'Live data from your last analysis · '+new Date(S.last).toLocaleTimeString('en-IN'):'Live sections fill in after you run Gemini or AI fill'}</div>`}
 
-function renderSuggest(){const r=calc(),m=S.mode,d=r.d,ai=S.rec&&S.rec.mode==m?S.rec:null,tr=ai?ai.trade||{}:{},e=N(tr.entry),tg=N(tr.exit),sl=N(tr.stop),no=!ai||/no trade|wait|sideways/i.test(tr.action||'')||!e||!tg;
+function renderSuggest(){const r=calc(),m=S.mode,d=r.d,ai=S.rec&&S.rec.mode==m?S.rec:null,tr=ai?ai.trade||{}:{},e=N(tr.entry),tg=N(tr.exit),sl=N(tr.stop),no=!ai||/no trade|wait/i.test((tr.strategy||tr.action)||'')||!e||!tg;
  const row=(a,b)=>`<div class="hi"><span>${a}</span><b style="text-align:right;max-width:60%">${b}</b></div>`,sc=Math.round(r.t*100),a=Math.abs(sc),side=sc>=0?'bullish':'bearish',str=a<15?'Neutral':(a<40?'Weak ':'Strong ')+side;
  let h=`<div class="glass hero"><div class="sub">${esc(S.sym||'No symbol')} · ${m=='fno'?'F&amp;O':'Stock'} · ${hzn()}</div><div style="font-size:42px;font-weight:800;letter-spacing:-1px;color:var(${COL[d]})">${lab(d)}</div><div class="sub">${tr.action?esc(tr.action)+' · ':''}confidence ${S.conf}%${ai?'':' · not analysed yet'}</div><div class="sub" id="cd"></div>
  <div style="margin-top:12px"><input type="range" min="-100" max="100" value="${sc}" disabled style="accent-color:var(${COL[d]})"><div class="row sub"><span>Weak</span><span>Neutral</span><span>Strong</span></div><b>${str} (${sc>0?'+':''}${sc})</b></div></div>`;
@@ -225,7 +225,7 @@ function renderSuggest(){const r=calc(),m=S.mode,d=r.d,ai=S.rec&&S.rec.mode==m?S
  if(no)p+=row('Trade',ai?'No trade now'+(tr.reason?': '+esc(tr.reason):''):'Run AI fill or paste a Gemini reply to get entry/exit prices');
  else{const dir=tg>e?1:-1,pu=N(tr.profitPerUnit)||dir*(tg-e),lu=N(tr.lossPerUnit)||(sl?dir*(e-sl):0),ls=N(tr.lotSize),bs=.5+Math.abs(r.t)*.35,pr=.5+(bs-.5)*S.conf/100,ev=pr*pu-(1-pr)*lu,ed=tr.entryDate||'',et=tr.entryTime||'',xd=tr.exitDate||'',xt=tr.exitTime||'';
   const T1=new Date(ed+'T'+(et||'09:15')),T2=new Date(xd+'T'+(xt||'15:15')),ms=T2-T1,dur=isNaN(ms)?'—':ms<0?'check dates':ms<864e5?(ms/36e5).toFixed(1)+' hours':Math.round(ms/864e5)+' days';
-  if(m=='fno'&&tr.instrument)p+=row('Instrument',esc(tr.instrument));
+  if(m=='fno'){if(tr.strategy)p+=row('Strategy',esc(tr.strategy));if(tr.instrument)p+=row('Instrument',esc(tr.instrument));if(tr.expiry)p+=row('Expiry date',esc(tr.expiry));if(Array.isArray(tr.legs)&&tr.legs.length)p+=row('Legs',tr.legs.map(l=>`${esc(l.action)} ${esc(l.type)} ${esc(l.strike)}${l.premium?' @ '+fm(+l.premium):''}`).join('<br>'))}
   p+=row((dir>0?'Buy':'Sell')+' at',fm(e)+(ed?' · '+ed:'')+(et?' '+et:''))+row('Exit price (target)',fm(tg)+` (${(pu/e*100).toFixed(1)}%)`)+row('Exit date & time',(xd||'—')+(xt?' · '+xt:''))+(sl?row('Stop-loss',fm(sl)+` (−${(lu/e*100).toFixed(1)}%)`):'')+row('Duration',dur)
    +row('Expected profit',`<span style="color:var(--buy)">${fm(pu)} /unit${ls?' · '+fm(pu*ls)+' /lot':''}</span>`)+(lu?row('Expected loss',`<span style="color:var(--sell)">${fm(lu)} /unit${ls?' · '+fm(lu*ls)+' /lot':''}</span>`):'')
    +(lu>0?row('Risk : reward','1 : '+(pu/lu).toFixed(2)):'')+row('Expected margin (score-weighted)',`<span style="color:var(${ev>=0?'--buy':'--sell'})">${ev>=0?'+':'−'}${fm(Math.abs(ev))} /unit (${(ev/e*100).toFixed(1)}%)</span>`);
